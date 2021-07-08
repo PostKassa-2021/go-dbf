@@ -1,6 +1,7 @@
 package godbf
 
 import (
+	"errors"
 	"io"
 	"os"
 	//"fmt"
@@ -45,6 +46,20 @@ func readFile(filename string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// check DBF file marker - last byte must be 0x1A
+	size := len(buf)
+	if size < 1 {
+		err = errors.New("invalid file size")
+		return nil, err
+	}
+	if buf[size-1] != 0x1a {
+		err = errors.New("invalid file marker")
+		return nil, err
+	}
+	// remove marker
+	buf = buf[:len(buf)-1]
+
 	return buf, err
 }
 
