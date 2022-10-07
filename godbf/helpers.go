@@ -49,18 +49,15 @@ func readFile(filename string) ([]byte, error) {
 
 	// check DBF file marker - last byte must be 0x1A
 	size := len(buf)
-	if size < 1 {
-		err = errors.New("invalid file size")
-		return nil, err
+	if size < 2 {
+		return nil, errors.New("invalid file size")
 	}
-	if buf[size-1] != 0x1a {
-		err = errors.New("invalid file marker")
-		return nil, err
+	if buf[size-1] == 0x1a {
+		// remove marker
+		buf = buf[:size-1]
 	}
-	// remove marker
-	buf = buf[:len(buf)-1]
 
-	return buf, err
+	return buf, nil
 }
 
 func uint32ToBytes(x uint32) []byte {
